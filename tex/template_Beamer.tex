@@ -1,0 +1,172 @@
+
+	\documentclass[xcolor=table]{beamer}
+	\usepackage[utf8]{inputenc}
+	\usepackage{default}
+\usepackage{subcaption}
+\usepackage{tikz}
+\usetikzlibrary{spy,calc,positioning}
+\usepackage{graphicx}
+	\usepackage{pgfmath,pgffor}
+%	\usepackage{enumitem}
+	
+	\usepackage{amsmath}
+	\usepackage{amssymb}
+	\usepackage{subcaption}
+	\usepackage{mwe}
+	\usepackage{soul}
+	\usepackage[T1]{fontenc}
+	\usepackage{lmodern}
+	
+	\usepackage{multicol}
+	\usepackage{cleveref}
+	
+	% allow lowercase mathcal
+	\usepackage[cal=boondoxo]{mathalfa}
+%Decreases space before equations
+%\usepackage{nccmath}
+	
+	
+	
+	% reset itemize style to Beamer style, enumitem overriddes it
+%	\setitemize{label=\usebeamerfont*{itemize item}%
+%		\usebeamercolor[fg]{itemize item}
+%		\usebeamertemplate{itemize item}}
+	
+	\usepackage{utopia} %font utopia imported
+	
+	\usetheme{Madrid}
+	\usecolortheme{default}
+	
+	\newcommand*{\FigFolder}{../figs}%
+	
+	\title[Coordinated Autonomous Vehicle Safety]{Multi-lane safety logic}
+	\author{Tom Nicholson}
+	\institute{Seoul National University}
+	
+	\usepackage{xcolor,pifont}
+	\newcommand*\colourcheck[1]{%
+		\expandafter\newcommand\csname #1check\endcsname{\textcolor{#1}{\ding{52}}}%
+	}
+	\newcommand*\colourqmark[1]{%
+		\expandafter\newcommand\csname #1qmark\endcsname{\textcolor{#1}{\textbf{?}}}%
+	}
+	\colourqmark{red}
+	\colourcheck{blue}
+	\colourcheck{green}
+	\colourcheck{red}
+	
+	\begin{document}
+		
+	\frame{\titlepage}
+	
+\begin{frame}{Safety for vehicles}
+\begin{block}{High-level}
+	Guarantee that vehicles have do not collide by maintaining safe stopping distance between them.
+\end{block}
+\pause
+
+\begin{block}{In MLSL:}
+	Different vehicles do not reserve the same space:
+	\pause
+	\begin{equation*}
+	\mathcal{TS} \models \forall c, d: c \ne d \Rightarrow \neg \langle re(c) \land re(d)\rangle
+	\end{equation*}
+	For a given traffic snapshot, for all different vehicles it is not true that somewhere they reserve the same space
+\end{block}
+
+\end{frame}
+
+
+
+\begin{frame}{Interval temporal logic}
+Same as for temporal logic, except:
+
+\begin{itemize}
+	\item \textit{interval}, a non-empty finite sequence of states $s_{0..n}$
+	\pause
+	\item \textit{chop} operator: $s_{0..n} \models \varphi \frown \psi$
+	\begin{block}{The \textit{chop} operator}
+		Sequence can be ``chopped'' so the first formula holds over the prefix and the second over the suffix
+		\begin{gather*}
+		s_{0..n} \models \varphi \frown \psi \text{  iff  } \exists i \le n \text{   such that    } s_{0..i} \models \varphi \text{ and } s_{i..n} \models \psi
+		\end{gather*}
+		
+	\end{block}
+	\pause
+	\item other interesting stuff not relevant to us
+\end{itemize}
+
+\end{frame}  
+
+\begin{frame}{MLSL extends ITL (and ignores some of it)}
+
+\begin{block}{Lane}
+	Represented as an infinite \textit{interval} over $\mathbb{R}$
+\end{block}
+\pause
+\begin{block}{Multi-lane road}
+	A finite set of lanes
+\end{block}
+\pause
+\begin{block}{Position of car}
+	A point along the lanes
+\end{block}
+
+
+\end{frame}
+
+\begin{frame}{Show basic motorway}
+Show how MLSL can represent infinite view of a 3 lane motorway
+
+Just vehicles with their position, speed and acceleration.
+
+Is interval infinite?
+\end{frame}
+
+\begin{frame}{Views}
+Snapshot of motorway
+
+Can have a view with an ego vehicle
+
+Only need to consider vehicles that are in this view, or intend to change into this view
+
+Can change \cref{eq:safety_goal} to be defined over ego-vehicle views:
+\begin{equation}\label{eq:safety_goal}
+\mathcal{TS}, V_{ego} \models \neg \exists c \neq ego \land \langle re(ego) \land re(c)\rangle
+\end{equation}
+\end{frame}
+
+\begin{frame}{Reservations}
+Portion of road a vehicle needs to drive safely
+
+May need two when changing lanes
+
+Define standard view of a vehicle
+\end{frame}
+
+\begin{frame}{Claims}
+Vehicles registering desire to change to a given lane
+\end{frame}
+
+\begin{frame}{Traffic Snapshot}
+Put it all together into a state
+\end{frame}
+
+\begin{frame}{Transitions}
+Transitions that are available
+\end{frame}
+
+\begin{frame}{Controllers}
+Created by using transition guards and state invariants.
+\end{frame}
+
+\begin{frame}{Proofs}
+By induction on number of transitions to reach $\mathcal{TS}$
+
+Assumptions
+
+Boils down to proving
+\end{frame}
+
+\end{document}
+

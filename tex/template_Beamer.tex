@@ -111,49 +111,134 @@ Same as for temporal logic, except:
 \begin{block}{Position of car}
 	A point along the lanes
 \end{block}
+\pause
+\begin{block}{Chop of lanes}
+	$\varphi \atop \psi$ iff lanes can be split so that they satisfy $\varphi$ and $\psi$ respectively
+\end{block}
 
 
 \end{frame}
 
-\begin{frame}{Show basic motorway}
-Show how MLSL can represent infinite view of a 3 lane motorway
+\begin{frame}{Traffic Snapshot - Vehicles}
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.7 \textwidth]{../figs/MLSL_simple}
+\end{figure}
+\pause
+\begin{block}{$\mathcal{TS}$}
+	$\mathcal{TS} \equiv (\mathbb{I}, \mathbb{L}, pos, vel, acc)$, where:
+	\begin{align*}
+	\mathbb{I} &\equiv \{A, B, C, D, E\}\\
+	\mathbb{L} &\equiv \{1, 2, 3\}\\
+	pos &\equiv \{A \mapsto p_A, \ldots, E \mapsto p_E \}\\
+	vel &\ldots\\
+	acc &\ldots
+	\end{align*}
+\end{block}
 
-Just vehicles with their position, speed and acceleration.
 
-Is interval infinite?
+
+
 \end{frame}
 
 \begin{frame}{Views}
-Snapshot of motorway
+Safety can be shown using only\textit{ local information}.\\
+\bigskip
+Restrict ourselves to subsets of continuous distance and contiguous lanes
+\pause
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.7 \textwidth]{../figs/MLSL_simple_view}
+\end{figure}
 
-Can have a view with an ego vehicle
+\pause
+Given this view, $V$, the following formula holds:
+\begin{equation*}
+\mathcal{TS}, V \models \genfrac{}{}{0pt}{}{free\frown C \frown free}{B \frown free}
+\end{equation*}
 
-Only need to consider vehicles that are in this view, or intend to change into this view
-
-Can change \cref{eq:safety_goal} to be defined over ego-vehicle views:
-\begin{equation}\label{eq:safety_goal}
-\mathcal{TS}, V_{ego} \models \neg \exists c \neq ego \land \langle re(ego) \land re(c)\rangle
-\end{equation}
 \end{frame}
 
 \begin{frame}{Reservations}
-Portion of road a vehicle needs to drive safely
+Vehicles need more than a point to drive safety, they need a \textit{reservation}
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.7 \textwidth]{../figs/MLSL_reservation}
+\end{figure}
 
-May need two when changing lanes
+Need two reservations when changing lanes
+\pause
+\begin{block}{$\mathcal{TS}$}
+	$\mathcal{TS} \equiv (\mathbb{I}, \mathbb{L}, pos, vel, acc, res)$, where:
+	\begin{equation*}
+	res \equiv \{A\mapsto \{1\}, B \mapsto{\{3\}}, \ldots, E \mapsto \{1, 2\}\}
+	\end{equation*}
+\end{block}
 
-Define standard view of a vehicle
 \end{frame}
 
 \begin{frame}{Claims}
-Vehicles registering desire to change to a given lane
+Vehicles declare intent to change lanes through a \textit{claim}
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.7 \textwidth]{../figs/MLSL_claim}
+\end{figure}
+\pause
+\begin{block}{$\mathcal{TS}$}
+	$\mathcal{TS} \equiv (\mathbb{I}, \mathbb{L}, pos, vel, acc, res, clm)$, where:
+	\begin{equation*}
+	clm \equiv \{ * \mapsto \emptyset \} \oplus \{D \mapsto \{2\}\}
+	\end{equation*}
+\end{block}
 \end{frame}
 
-\begin{frame}{Traffic Snapshot}
-Put it all together into a state
+\begin{frame}{Standard view}
+$V^s_{ego}$ is the \textit{standard view} with respect to a given vehicle.\\
+\bigskip
+Includes all lanes and a fixed interval before and after vehicle.
+\pause
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.7 \textwidth]{../figs/MLSL_standard_view}
+\end{figure}
+\pause
+For the standard view with respect to $E$ we have:
+\begin{equation*}
+\mathcal{TS}, V^s_{C} \models \begin{matrix}free \\
+											free \frown re(C) \frown free \frown cl(D) \frown free \\
+											res(B) \frown free \frown re(D) \frown free \end{matrix}
+\end{equation*}
+\end{frame}
+
+\begin{frame}{Safety goal}
+The modality \textit{somwhere} $\varphi$:
+\begin{equation*}
+\langle \varphi \rangle \equiv true \frown \begin{pmatrix}true \\ \varphi \\ true\end{pmatrix} \frown true
+\end{equation*}
+\pause
+\begin{block}{Global MLSL Safety}
+Different vehicles do not reserve the same space:
+
+\begin{equation*}
+\mathcal{TS} \models \forall c, d: c \ne d \Rightarrow \neg \langle re(c) \land re(d)\rangle
+\end{equation*}
+\end{block}
+\pause
+
+\begin{block}{Local MLSL Safety}
+Safety wrt arbitrary eqo vehicle
+\begin{equation*}\label{eq:safety_goal}
+\mathcal{TS}, V_{ego} \models \neg \exists c \neq ego \land \langle re(ego) \land re(c)\rangle
+\end{equation*}
+\end{block}
 \end{frame}
 
 \begin{frame}{Transitions}
-Transitions that are available
+Can change safety definition to:
+\begin{equation*}\label{eq:safety_goal}
+\mathcal{TS}, V_{ego} \models \neg \exists c \neq ego \land \langle re(ego) \land re(c)\rangle
+\end{equation*}
+
 \end{frame}
 
 \begin{frame}{Controllers}

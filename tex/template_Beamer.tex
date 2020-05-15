@@ -61,17 +61,17 @@
 	
 \begin{frame}{Safety for vehicles}
 \begin{block}{High-level}
-	Guarantee that vehicles have do not collide by maintaining safe stopping distance between them.
+	Vehicles not collide by maintaining safe stopping distances.
 \end{block}
 \pause
-
+\bigskip
+\bigskip
 \begin{block}{In MLSL:}
 	Different vehicles do not reserve the same space:
 	\pause
 	\begin{equation*}
 	\mathcal{TS} \models \forall c, d: c \ne d \Rightarrow \neg \langle re(c) \land re(d)\rangle
 	\end{equation*}
-	For a given traffic snapshot, for all different vehicles it is not true that somewhere they reserve the same space
 \end{block}
 
 \end{frame}
@@ -160,7 +160,8 @@ Given this view, $V$, the following formula holds:
 \end{frame}
 
 \begin{frame}{Reservations}
-Vehicles need more than a point to drive safety, they need a \textit{reservation}
+Vehicles occupy more than a single point, they need a \textit{reservation}
+\pause
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=0.7 \textwidth]{../figs/MLSL_reservation}
@@ -179,6 +180,7 @@ Need two reservations when changing lanes
 
 \begin{frame}{Claims}
 Vehicles declare intent to change lanes through a \textit{claim}
+\pause
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=0.7 \textwidth]{../figs/MLSL_claim}
@@ -193,7 +195,7 @@ Vehicles declare intent to change lanes through a \textit{claim}
 \end{frame}
 
 \begin{frame}{Standard view}
-$V^s_{ego}$ is the \textit{standard view} with respect to a given vehicle.\\
+$V_{ego}$ is the \textit{standard view} with respect to a given vehicle.\\
 \bigskip
 Includes all lanes and a fixed interval before and after vehicle.
 \pause
@@ -204,7 +206,7 @@ Includes all lanes and a fixed interval before and after vehicle.
 \pause
 For the standard view with respect to $E$ we have:
 \begin{equation*}
-\mathcal{TS}, V^s_{C} \models \begin{matrix}free \\
+\mathcal{TS}, V_{C} \models \begin{matrix}free \\
 											free \frown re(C) \frown free \frown cl(D) \frown free \\
 											res(B) \frown free \frown re(D) \frown free \end{matrix}
 \end{equation*}
@@ -234,23 +236,76 @@ Safety wrt arbitrary eqo vehicle
 \end{frame}
 
 \begin{frame}{Transitions}
-Can change safety definition to:
-\begin{equation*}\label{eq:safety_goal}
-\mathcal{TS}, V_{ego} \models \neg \exists c \neq ego \land \langle re(ego) \land re(c)\rangle
-\end{equation*}
+Used to transform $\mathcal{TS}$, informally, $\mathcal{A}$:
+\begin{itemize}
+	\item time can pass and vehicles can change acceleration
+	\item $r$: vehicles can reserve the lane it claims
+	\item $c$: vehicles can claim a single lane next to reserved lane
+	\item vehicles can withdraw their claims and reservations
+\end{itemize}
 
 \end{frame}
 
 \begin{frame}{Controllers}
-Created by using transition guards and state invariants.
+\begin{block}{States}
+	Defined by \textit{state invariants} $\{p_i\}$, MLSL forumulae restricting $\mathcal{TS}$\\
+	$$\mathbb{S} = \{s_i\ |\ s_i \subseteq \mathcal{TS},\ p_i(s_i) = \top \}$$
+\end{block}
+\pause
+\begin{block}{Actions}
+	Defined by \textit{action guards} $\{q_j\}$, MLSL forumulae limiting actions available in controller states:
+	$$\mathbb{A} = \{a_i\ |\ a_i \subseteq \mathcal{A},\ q_i(a_i) = \top \}$$
+\end{block}
+\pause
+Deterministic controller is therefore:
+$$C : \mathbb{S} \times \mathbb{A} \to \mathbb{S} \equiv C:2^\mathcal{TS} \times 2^\mathcal{A} \to 2^\mathcal{TS}$$
 \end{frame}
 
-\begin{frame}{Proofs}
-By induction on number of transitions to reach $\mathcal{TS}$
+\begin{frame}{Proof of safety}
+Wish to proove, for a given controller:
+\begin{equation*}\label{eq:safety_goal}
+\mathcal{TS}, V_{ego} \models \neg \exists c \neq ego \land \langle re(ego) \land re(c)\rangle
+\end{equation*}
+\pause 
+\begin{block}{Assumptions}
+	\begin{enumerate}
+		\item There is an initial safe state
+		\item Cars can maintain safe distances along lanes
+	\end{enumerate}
+\end{block}
 
-Assumptions
+\pause
+\bigskip
+By induction on number of transitions to reach $\mathcal{TS}$ from initial state.\\
+\bigskip
+\pause
+Proceed by induction on sequence of states $\mathcal{TS}_i$.\\
+\bigskip
+\pause
+Base case follows from assumption 1.
 
-Boils down to proving
+\end{frame}
+
+\begin{frame}{Inductive step}
+
+	\begin{itemize}
+		\item 	Assume $\mathcal{TS_n}, V_{eqo} \models \neg \exists c \neq ego \land \langle re(ego) \land re(c)\rangle \equiv Safe$\\
+		\pause
+		\item Only system transition that can lead to a violation at next step is $r(ego)$\\
+		\pause
+		\item For all controller states defined by $p_i$ where $r(ego)$ is activated by $q_j$, need to show:
+		\begin{enumerate}
+			\pause
+			\item Could be in that state given inductive hypothesis:
+			$$\mathcal{TS_n}, V_{eqo} \models Safe \Rightarrow p_i$$
+			\pause
+			\item We will be safe if we take that transition from that state:
+			$$\mathcal{TS_n}, V_{eqo}\models p_i \land r_j \Rightarrow Safe$$
+		\end{enumerate}
+	\end{itemize}
+\pause
+$\qed$
+
 \end{frame}
 
 \end{document}

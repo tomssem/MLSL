@@ -19,6 +19,7 @@
 	
 	\usepackage{multicol}
 	\usepackage{cleveref}
+\usepackage{bussproofs}
 	
 	% allow lowercase mathcal
 	\usepackage[cal=boondoxo]{mathalfa}
@@ -204,16 +205,16 @@ Includes all lanes and a fixed interval before and after vehicle.
 	\includegraphics[width=0.7 \textwidth]{../figs/MLSL_standard_view}
 \end{figure}
 \pause
-For the standard view with respect to $E$ we have:
+For the standard view with respect to $C$ we have:
 \begin{equation*}
 \mathcal{TS}, V_{C} \models \begin{matrix}free \\
 											free \frown re(C) \frown free \frown cl(D) \frown free \\
-											res(B) \frown free \frown re(D) \frown free \end{matrix}
+											re(B) \frown free \frown re(D) \frown free \end{matrix}
 \end{equation*}
 \end{frame}
 
 \begin{frame}{Safety goal}
-The modality \textit{somwhere} $\varphi$:
+The modality \textit{somewhere} $\varphi$:
 \begin{equation*}
 \langle \varphi \rangle \equiv true \frown \begin{pmatrix}true \\ \varphi \\ true\end{pmatrix} \frown true
 \end{equation*}
@@ -239,8 +240,8 @@ Safety wrt arbitrary eqo vehicle
 Used to transform $\mathcal{TS}$, informally, $\mathcal{A}$:
 \begin{itemize}
 	\item time can pass and vehicles can change acceleration
-	\item $r$: vehicles can reserve the lane it claims
-	\item $c$: vehicles can claim a single lane next to reserved lane
+	\item $r$: vehicle can reserve a lane it claims
+	\item $c$: vehicle can claim a single lane next to reserved lane
 	\item vehicles can withdraw their claims and reservations
 \end{itemize}
 
@@ -254,11 +255,18 @@ Used to transform $\mathcal{TS}$, informally, $\mathcal{A}$:
 \pause
 \begin{block}{Actions}
 	Defined by \textit{action guards} $\{q_j\}$, MLSL forumulae limiting actions available in controller states:
-	$$\mathbb{A} = \{a_i\ |\ a_i \subseteq \mathcal{A},\ q_i(a_i) = \top \}$$
+	$$\mathbb{A} = \{a_i\ |\ a_i \in \mathcal{A},\ q_i(a_i) = \top \}$$
 \end{block}
 \pause
 Deterministic controller is therefore:
-$$C : \mathbb{S} \times \mathbb{A} \to \mathbb{S} \equiv C:2^\mathcal{TS} \times 2^\mathcal{A} \to 2^\mathcal{TS}$$
+$$C : \mathbb{S} \times \mathbb{A} \to \mathbb{S} \equiv C:2^\mathcal{TS} \times \mathcal{A} \to 2^\mathcal{TS}$$
+\end{frame}
+
+\begin{frame}{Controller example}
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1.0 \textwidth]{../figs/controller.png}
+\end{figure}
 \end{frame}
 
 \begin{frame}{Proof of safety}
@@ -289,7 +297,7 @@ Base case follows from assumption 1.
 \begin{frame}{Inductive step}
 
 	\begin{itemize}
-		\item 	Assume $\mathcal{TS_n}, V_{eqo} \models \neg \exists c \neq ego \land \langle re(ego) \land re(c)\rangle \equiv Safe$\\
+		\item 	Assume $\mathcal{TS}_n, V_{eqo} \models \neg \exists c \neq ego \land \langle re(ego) \land re(c)\rangle \equiv Safe$\\
 		\pause
 		\item Only system transition that can lead to a violation at next step is $r(ego)$\\
 		\pause
@@ -297,10 +305,11 @@ Base case follows from assumption 1.
 		\begin{enumerate}
 			\pause
 			\item Could be in that state given inductive hypothesis:
-			$$\mathcal{TS_n}, V_{eqo} \models Safe \Rightarrow p_i$$
+			
+			\begin{prooftree}\AxiomC{$\mathcal{TS}_n, V_{eqo} \models Safe$}\UnaryInfC{$\mathcal{TS}_n, V_{eqo} \models p_i$}\end{prooftree}
 			\pause
 			\item We will be safe if we take that transition from that state:
-			$$\mathcal{TS_n}, V_{eqo}\models p_i \land r_j \Rightarrow Safe$$
+			\begin{prooftree}\AxiomC{$\mathcal{TS}_n, V_{eqo} \models p_i$}\AxiomC{$\mathcal{TS}_n, V_{eqo} \models q_j$}\BinaryInfC{$\mathcal{TS}_{n+1}, V_{eqo}\models  Safe$}\end{prooftree}
 		\end{enumerate}
 	\end{itemize}
 \pause
